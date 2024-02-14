@@ -6,7 +6,7 @@ Then, open another terminal/console and execute:
 
 java Client_02
 
-This can be repeated with additional terminal
+This can be repeated with additional terminals:
 
 java Client_02
 
