@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
@@ -32,7 +33,7 @@ public class Server {
     public Server(int port) {
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Server started on port: " + port);
+            System.out.println("Server started on host: " + InetAddress.getLocalHost().getHostName() + " port: " + port);
         } catch (IOException e) {
             System.err.println("Could not start server on port: " + port);
             e.printStackTrace();
@@ -45,12 +46,15 @@ public class Server {
      * Each client connection is managed by a separate ClientHandler thread.
      */
     public void start() {
+        updateServerStatus();  // Display initial server status
         try {
             while (true) {  // Infinite loop to continuously accept new client connections.
                 Socket clientSocket = serverSocket.accept();  // Accept an incoming client connection.
                 ClientHandler clientHandler = new ClientHandler(clientSocket, this);  // Create a handler for the new client.
                 clientHandlers.add(clientHandler);  // Add the new client handler to the set of active handlers.
                 new Thread(clientHandler).start();  // Start the client handler thread.
+                updateServerStatus();  // Update server status after adding a new client
+                broadcast("SERVER STATUS: Connected Clients=" + clientHandlers.size(), null);  // Inform clients about the new count
             }
         } catch (IOException e) {
             System.err.println("Server exception: " + e.getMessage());
@@ -82,5 +86,26 @@ public class Server {
         broadcast("Client disconnected: " + clientHandler.getClientSocket().getInetAddress().getHostName(), clientHandler);
         clientHandlers.remove(clientHandler);  // Remove the client handler from the set.
         System.out.println("Client disconnected: " + clientHandler.getClientSocket().getInetAddress().getHostName());
+        updateServerStatus();  // Update server status after removing a client
+        broadcast("SERVER STATUS: Connected Clients=" + clientHandlers.size(), null);  // Inform clients about the new count
+    }
+
+    /**
+     * Updates and displays the server's status, including the number of connected clients.
+     */
+    private void updateServerStatus() {
+        System.out.println("SERVER STATUS: Host=" + getServerHost() + ", Port=" + port + ", Connected Clients=" + clientHandlers.size());
+    }
+
+    /**
+     * Attempts to retrieve the server's hostname.
+     * @return The hostname of the server.
+     */
+    private String getServerHost() {
+        try {
+            return serverSocket.getInetAddress().getLocalHost().getHostName();
+        } catch (IOException e) {
+            return "Unknown Host";
+        }
     }
 }
