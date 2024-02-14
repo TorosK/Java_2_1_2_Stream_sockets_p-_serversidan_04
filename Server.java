@@ -75,19 +75,23 @@ public class Server {
     }
 
     /**
-     * Removes a client from the list of connected clients.
+     * Removes a client from the list of connected clients and notifies other clients.
      * 
      * @param clientHandler The client handler to be removed.
      */
     public void removeClient(ClientHandler clientHandler) {
+        // Broadcast disconnection message before removing the client
+        broadcast("Client disconnected: " + clientHandler.getClientSocket().getInetAddress().getHostName(), clientHandler);
+        
         clientHandlers.remove(clientHandler);
+        // Optionally, log the disconnection on the server console
         System.out.println("Client disconnected: " + clientHandler.getClientSocket().getInetAddress().getHostName());
     }
 }
 
 /**
  * Handles communication with a connected client. Reads messages from the client
- * and broadcasts them to all other clients.
+ * and broadcasts them to all other clients. Notifies other clients upon disconnection.
  */
 class ClientHandler implements Runnable {
     private Socket clientSocket;
@@ -116,13 +120,19 @@ class ClientHandler implements Runnable {
                 server.broadcast("Client [" + clientSocket.getInetAddress().getHostName() + "]: " + inputLine, this);
             }
         } catch (IOException e) {
-            System.out.println("ClientHandler I/O exception: " + e.getMessage());
+            // Log the error and broadcast it before closing the connection
+            String errorMsg = "ClientHandler I/O exception: " + e.getMessage();
+            System.out.println(errorMsg);
+            server.broadcast(errorMsg, this);
         } finally {
             server.removeClient(this);
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                System.out.println("Client socket close exception: " + e.getMessage());
+                // Log any exceptions that occur when closing the client socket
+                String closeMsg = "Client socket close exception: " + e.getMessage();
+                System.out.println(closeMsg);
+                server.broadcast(closeMsg, this);
             }
         }
     }
