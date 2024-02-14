@@ -12,4 +12,4 @@ java Client_02
 
 In the same terminals, You can now input and submit chat messages with ENTER, and they will appear in all the client terminals.
 
-Client error and exit messages appear in all terminals, both client and server.
+Client error, number of clients and exit messages appear in all terminals, both client and server.
