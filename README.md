@@ -2,6 +2,10 @@ To compile all:
 
 javac *.java
 
+For javadoc execution into 'doc' folder:
+
+javadoc -d doc *.java
+
 First, open a terminal/console for the folder/directory containing the files, and execute:
 
 java Server
