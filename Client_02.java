@@ -27,10 +27,10 @@ public class Client_02 {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             // Notifies the user of successful connection
-            System.out.println("Connected to the server at " + host + ":" + port);
+            System.out.println("Connected to the server at host: " + host + " port: " + port);
         } catch (IOException e) {
             // Handles errors during connection and exits the program
-            System.err.println("Could not connect to the server at " + host + ":" + port);
+            System.err.println("Could not connect to the server at host: " + host + " port: " + port);
             System.exit(1);
         }
     }

@@ -1,3 +1,7 @@
+To compile all:
+
+javac *.java
+
 First, open a terminal/console for the folder/directory containing the files, and execute:
 
 java Server
